@@ -129,11 +129,15 @@ button:enabled{
         </style>
     </head>
     <body>
+			
+       
+	
         <div id='container' class="blur">
             <div id="info">
                 
             </div>
              <button class="no-blur"></button>
+			 
             <script type="module">
             import * as THREE from 'https://threejs.org/build/three.module.js';
             import Stats from 'https://threejs.org/examples/jsm/libs/stats.module.js';
@@ -226,7 +230,7 @@ button:enabled{
 			
 			const materials=[
 			new THREE.MeshMatcapMaterial({map:loader.load('textures/body base.jpg'),matcap:loader.load('textures/body_matcup.jpg'),color:0xffffff,skinning:true,morphTargets:true}),//body
-			new THREE.MeshMatcapMaterial({map:loader.load('textures/cloth sha lay.jpg'),matcap:loader.load('textures/podstilka_matcup.jpg'),color:0xffffff,side:THREE.DoubleSide,skinning:true}),//podstilka
+			new THREE.MeshMatcapMaterial({map:loader.load('textures/cloth sha lay.jpg'),matcap:loader.load('textures/podstilka_matcup.jpg'),side:THREE.DoubleSide,color:0xffffff,skinning:true}),//podstilka
 			new THREE.MeshBasicMaterial({map:loader.load('textures/base.png'),side:THREE.DoubleSide,transparent:true,skinning:true }),//base
 			new THREE.MeshBasicMaterial({map:loader.load('textures/cloth.jpg'),skinning:true,morphTargets:true,skinning:true}),//cloth
 			new THREE.MeshBasicMaterial({map:loader.load('textures/hair1.jpg'),skinning:true}),//hair1
@@ -239,10 +243,12 @@ button:enabled{
             meshObject=object;
             object.traverse( function ( child ) {
 
-            if (child.name=='body') {child.material=materials[0],child.material.map.encoding=THREE.sRGBEncoding}
+            if (child.name=='body') {child.material[0]=materials[0],child.material[0].map.encoding=THREE.sRGBEncoding;
+			child.material[1]=materials[3],child.material[1].map.encoding=THREE.sRGBEncoding;
+			}
             if (child.name=='podstilka') {child.material=materials[1],child.material.map.encoding=THREE.sRGBEncoding}
             if (child.name=='base') {child.material=materials[2],child.material.map.encoding=THREE.sRGBEncoding}
-            if (child.name=='cloth') {child.material=materials[3],child.material.map.encoding=THREE.sRGBEncoding}
+           // if (child.name=='cloth') {child.material=materials[3],child.material.map.encoding=THREE.sRGBEncoding}
             if (child.name=='hair1') {child.material=materials[4],child.material.map.encoding=THREE.sRGBEncoding}    
             if (child.name=='hair2') {child.material=materials[5],child.material.map.encoding=THREE.sRGBEncoding} 
            
@@ -255,7 +261,7 @@ button:enabled{
 			
             scene.add(object);
 			mixer = new THREE.AnimationMixer(scene.children[0]);
-			var actionBreath=mixer.clipAction(scene.children[0].animations[8]);
+			var actionBreath=mixer.clipAction(scene.children[0].animations[0]);
 			console.log(scene.children[0]) //0 3
 			actionBreath.play();
             } );
@@ -299,5 +305,8 @@ button:enabled{
             stats.update();
             }
             </script>
+			
+			
+	
         </body>
     </html>
