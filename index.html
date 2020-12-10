@@ -143,7 +143,7 @@ button:enabled{
             
             
             var container, stats, controls;
-            var camera, scene, renderer, light,composer,savePass;
+            var camera, scene, renderer;
             var clock = new THREE.Clock();
             //add animation
             var mixer;
@@ -162,11 +162,12 @@ button:enabled{
             if(event.type=='click'){
             mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
             mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+			 
             }
             else{
             mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2 - 1;
             mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2 + 1;
-            
+          
             }
             raycaster.setFromCamera( mouse, camera );
            // console.log(meshObject.children)
@@ -183,7 +184,7 @@ button:enabled{
             
         }
 
-           // console.log(intersects[0].object.name);
+          
 
             }
 
@@ -196,7 +197,7 @@ button:enabled{
             function init() {
             container = document.getElementById('container')
             camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.3, 2000 );
-            camera.position.set( -10, 412, 10 );
+            camera.position.set( -23, 244, 46.05 );
             
             scene = new THREE.Scene();
             scene.background = new THREE.Color( 0xA8A8A8 );
@@ -224,12 +225,12 @@ button:enabled{
 			const loader=new THREE.TextureLoader();
 			
 			const materials=[
-			new THREE.MeshMatcapMaterial({map:loader.load('textures/body base.jpg'),matcap:loader.load('textures/body_matcup.jpg'),color:0xffffff,skinning:true}),//body
-			new THREE.MeshMatcapMaterial({map:loader.load('textures/cloth sha lay.jpg'),matcap:loader.load('textures/podstilka_matcup.jpg'),color:0xffffff}),//podstilka
-			new THREE.MeshBasicMaterial({map:loader.load('textures/base.png'),side:THREE.DoubleSide,transparent:true }),//base
-			new THREE.MeshBasicMaterial({map:loader.load('textures/cloth.jpg')}),//cloth
-			new THREE.MeshBasicMaterial({map:loader.load('textures/hair1.jpg')}),//hair1
-			new THREE.MeshBasicMaterial({map:loader.load('textures/hair2.jpg')}),//hair2
+			new THREE.MeshMatcapMaterial({map:loader.load('textures/body base.jpg'),matcap:loader.load('textures/body_matcup.jpg'),color:0xffffff,skinning:true,morphTargets:true}),//body
+			new THREE.MeshMatcapMaterial({map:loader.load('textures/cloth sha lay.jpg'),matcap:loader.load('textures/podstilka_matcup.jpg',),color:0xffffff,skinning:true}),//podstilka
+			new THREE.MeshBasicMaterial({map:loader.load('textures/base.png'),side:THREE.DoubleSide,transparent:true,skinning:true }),//base
+			new THREE.MeshBasicMaterial({map:loader.load('textures/cloth.jpg'),skinning:true,morphTargets:true,skinning:true}),//cloth
+			new THREE.MeshBasicMaterial({map:loader.load('textures/hair1.jpg'),skinning:true}),//hair1
+			new THREE.MeshBasicMaterial({map:loader.load('textures/hair2.jpg'),skinning:true}),//hair2
 			];
            
             
@@ -250,7 +251,13 @@ button:enabled{
             
             });
             
+		
+			
             scene.add(object);
+			mixer = new THREE.AnimationMixer(scene.children[0]);
+			var actionBreath=mixer.clipAction(scene.children[0].animations[8]);
+			console.log(scene.children[0]) //0 3
+			actionBreath.play();
             } );
             
        
@@ -270,7 +277,7 @@ button:enabled{
             controls = new OrbitControls( camera, renderer.domElement );
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
-            controls.target.set( -10, 0, 0 );
+            controls.target.set( -18, 43, 6.4 );
             controls.update();
             window.addEventListener( 'resize', onWindowResize, false );
             // stats
