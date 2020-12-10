@@ -226,7 +226,7 @@ button:enabled{
 			
 			const materials=[
 			new THREE.MeshMatcapMaterial({map:loader.load('textures/body base.jpg'),matcap:loader.load('textures/body_matcup.jpg'),color:0xffffff,skinning:true,morphTargets:true}),//body
-			new THREE.MeshMatcapMaterial({map:loader.load('textures/cloth sha lay.jpg'),matcap:loader.load('textures/podstilka_matcup.jpg',),color:0xffffff,skinning:true}),//podstilka
+			new THREE.MeshMatcapMaterial({map:loader.load('textures/cloth sha lay.jpg'),matcap:loader.load('textures/podstilka_matcup.jpg'),color:0xffffff,side:THREE.DoubleSide,skinning:true}),//podstilka
 			new THREE.MeshBasicMaterial({map:loader.load('textures/base.png'),side:THREE.DoubleSide,transparent:true,skinning:true }),//base
 			new THREE.MeshBasicMaterial({map:loader.load('textures/cloth.jpg'),skinning:true,morphTargets:true,skinning:true}),//cloth
 			new THREE.MeshBasicMaterial({map:loader.load('textures/hair1.jpg'),skinning:true}),//hair1
