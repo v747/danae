@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>three.js webgl - FBX loader</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="shortcut icon" type="image/png" href="https://64.media.tumblr.com/avatar_0b78c1b3fe29_512.png"/>
+        <style>
+        body {
+        margin: 0;
+        background-color: #000;
+        color: #fff;
+        font-family: Monospace;
+        font-size: 13px;
+        line-height: 24px;
+        overscroll-behavior: none;
+        }
+        a {
+        color: #ff0;
+        text-decoration: none;
+        }
+        a:hover {
+        text-decoration: underline;
+        }
+        button {
+        cursor: pointer;
+        text-transform: uppercase;
+        }
+        canvas {
+        display: block;
+        }
+        #info {
+        position: absolute;
+        top: 0px;
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        text-align: center;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        pointer-events: none;
+        z-index: 1; /* TODO Solve this in HTML */
+        }
+        a, button, input, select {
+        pointer-events: auto;
+        }
+        .dg.ac {
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        z-index: 2 !important; /* TODO Solve this in HTML */
+        }
+        #overlay {
+        position: absolute;
+        z-index: 2;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.7);
+        }
+        #overlay button {
+        background: #ffffff;
+        border: 0;
+        color: #000000;
+        padding: 16px 20px;
+        text-transform: uppercase;
+        cursor:  pointer;
+        }
+        #notSupported {
+        width: 50%;
+        margin: auto;
+        background-color: #f00;
+        margin-top: 20px;
+        padding: 10px;
+        }
+        .blur{
+        opacity:0;
+        filter: blur(100px);
+        }
+        .no-blur{
+        transition: 1s;
+        opacity: 1
+        filter:blur(0px);
+        }
+        body {
+        background-repeat: no-repeat;
+        background-position: center;
+        background-image: url(loading.jpg); /* Путь к фоновому изображению */
+        background-color: #00000; /* Цвет фона */
+        background-size:50%;
+        }
+             button {
+
+  display: inline-block;   
+   background-color: gray;   
+   width: 50px;   
+   height: 50px;   
+   text-align: center;   
+   border-radius: 4px;   
+   margin: 30px;   
+   position: fixed;   
+   bottom: 30px;   
+   right: 30px;    
+   z-index: 1000; 
+   transition: 2s;
+   opacity: 0.2;
+   border-radius: 100px
+}
+
+button:hover {   
+   cursor: pointer;   
+   opacity: 1;
+   outline: none;
+} 
+
+
+button:enabled{
+     cursor: pointer;  
+   outline: none;
+}
+        tumblr_controls, .tmblr-iframe{display:none !important;}
+        </style>
+    </head>
+    <body>
+        <div id='container' class="blur">
+            <div id="info">
+                
+            </div>
+             <button class="no-blur"></button>
+            <script type="module">
+            import * as THREE from 'https://threejs.org/build/three.module.js';
+            import Stats from 'https://threejs.org/examples/jsm/libs/stats.module.js';
+            import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
+            import { FBXLoader } from 'https://threejs.org/examples/jsm/loaders/FBXLoader.js';
+            
+            
+            
+            var container, stats, controls;
+            var camera, scene, renderer, light,composer,savePass;
+            var clock = new THREE.Clock();
+            //add animation
+            var mixer;
+            
+            init();
+            animate();
+            var action0,action1,action2,action3;
+            var meshObject;
+            var raycaster = new THREE.Raycaster();
+            var mouse = new THREE.Vector2();
+            window.addEventListener('touchstart',touchScreen,false);
+            window.addEventListener( 'click', touchScreen, false );
+                
+            function touchScreen() {
+            
+            if(event.type=='click'){
+            mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+            mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+            }
+            else{
+            mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2 - 1;
+            mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2 + 1;
+            
+            }
+            raycaster.setFromCamera( mouse, camera );
+           // console.log(meshObject.children)
+            var intersects = raycaster.intersectObjects(meshObject.children);
+            if(intersects[0]!=undefined){
+            switch(intersects[0].object.name){
+                case 'right_breast_collider':
+                action1.play().reset();
+                break;
+                case 'left_breast_collider':
+                action0.play().reset();
+                break;
+}
+            
+        }
+
+           // console.log(intersects[0].object.name);
+
+            }
+
+
+            document.getElementById('container').addEventListener('dblclick',function(e) {
+                this.requestFullscreen();
+        });
+
+            //run once
+            function init() {
+            container = document.getElementById('container')
+            camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.3, 2000 );
+            camera.position.set( -10, 412, 10 );
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color( 0xA8A8A8 );
+          //  scene.fog=new THREE.Fog('0xAAAAAA',0,2222)
+                     
+            
+            //load mesh
+            var manager = new THREE.LoadingManager();
+            manager.onLoad = function ( ) {
+            container.className='no-blur';
+                var button=document.getElementsByTagName("button")[0];
+            button.className='no-blur';
+                button.addEventListener('click',function(){
+                    if(document.fullscreen==false){
+
+                    document.body.requestFullscreen()
+                    }
+                    else{
+                        document.exitFullscreen();
+                    }
+                });
+            
+            };
+
+			const loader=new THREE.TextureLoader();
+			
+			const materials=[
+			new THREE.MeshMatcapMaterial({map:loader.load('textures/body base.jpg'),matcap:loader.load('textures/body_matcup.jpg'),color:0xffffff,skinning:true}),//body
+			new THREE.MeshMatcapMaterial({map:loader.load('textures/cloth sha lay.jpg'),matcap:loader.load('textures/podstilka_matcup.jpg'),color:0xffffff}),//podstilka
+			new THREE.MeshBasicMaterial({map:loader.load('textures/base.png'),side:THREE.DoubleSide,transparent:true }),//base
+			new THREE.MeshBasicMaterial({map:loader.load('textures/cloth.jpg')}),//cloth
+			new THREE.MeshBasicMaterial({map:loader.load('textures/hair1.jpg')}),//hair1
+			new THREE.MeshBasicMaterial({map:loader.load('textures/hair2.jpg')}),//hair2
+			];
+           
+            
+            var ModelLoader = new FBXLoader(manager);
+            ModelLoader.load( 'danae.fbx', function ( object ) {
+            meshObject=object;
+            object.traverse( function ( child ) {
+
+            if (child.name=='body') {child.material=materials[0],child.material.map.encoding=THREE.sRGBEncoding}
+            if (child.name=='podstilka') {child.material=materials[1],child.material.map.encoding=THREE.sRGBEncoding}
+            if (child.name=='base') {child.material=materials[2],child.material.map.encoding=THREE.sRGBEncoding}
+            if (child.name=='cloth') {child.material=materials[3],child.material.map.encoding=THREE.sRGBEncoding}
+            if (child.name=='hair1') {child.material=materials[4],child.material.map.encoding=THREE.sRGBEncoding}    
+            if (child.name=='hair2') {child.material=materials[5],child.material.map.encoding=THREE.sRGBEncoding} 
+           
+             
+   
+            
+            });
+            
+            scene.add(object);
+            } );
+            
+       
+            
+            
+            
+            renderer = new THREE.WebGLRenderer( { antialias: true } );
+            renderer.toneMapping = THREE.ReinhardToneMapping;
+			renderer.toneMappingExposure=1.86;//1.86
+			renderer.outputEncoding = THREE.sRGBEncoding
+            renderer.setPixelRatio( window.devicePixelRatio );
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            renderer.shadowMap.enabled = false;
+            container.appendChild( renderer.domElement );
+            
+            
+            controls = new OrbitControls( camera, renderer.domElement );
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.target.set( -10, 0, 0 );
+            controls.update();
+            window.addEventListener( 'resize', onWindowResize, false );
+            // stats
+            stats = new Stats();
+            container.appendChild( stats.dom );
+            }
+            function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            }
+            
+            function animate() {
+            requestAnimationFrame( animate );
+            var delta = clock.getDelta();
+            if ( mixer ) mixer.update( delta );
+            renderer.render( scene, camera );
+            controls.update();
+            stats.update();
+            }
+            </script>
+        </body>
+    </html>
